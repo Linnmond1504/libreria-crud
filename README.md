@@ -2,7 +2,7 @@
 
 ## 📋 Descripción del Proyecto
 
-**Librería Digital** es un sistema completo de gestión de biblioteca desarrollado con Node.js, Express y MongoDB. Implementa un API RESTful con autenticación JWT, sistema de roles (Usuario, Bibliotecario, Administrador), gestión de libros, categorías, préstamos y reseñas. Incluye un frontend interactivo con diseño tipo Netflix.
+**Librería Digital** es un sistema completo de gestión de biblioteca desarrollado con Node.js, Express y MongoDB. Implementa un API RESTful con autenticación JWT, sistema de roles (Usuario, Bibliotecario, Administrador), gestión de libros, categorías, préstamos y reseñas. Incluye un frontend interactivo.
 
 ---
 
@@ -16,7 +16,7 @@
   email: String,             // Único, requerido, validado
   password: String,          // Hasheado con bcrypt, requerido
   role: String,              // 'user' | 'librarian' | 'admin'
-  profileImage: String,      // URL de la imagen
+  profileImage: String,      
   createdAt: Date,
   updatedAt: Date
 }
@@ -182,6 +182,39 @@ net start MongoDB
 # Linux/Mac
 sudo systemctl start mongod
 ```
+
+
+### Paso 5.5: Cargar datos de ejemplo (Recomendado)
+
+Para facilitar las pruebas del sistema, puedes cargar datos de ejemplo ejecutando:
+```bash
+npm run seed
+```
+
+Este comando creará automáticamente:
+- ✅ 3 usuarios con diferentes roles (Usuario, Bibliotecario, Administrador)
+- ✅ 3 categorías de libros (Ficción, No Ficción, Ciencia y Tecnología)
+- ✅ 5 libros de ejemplo con toda su información
+
+**⚠️ Nota:** Este comando eliminará todos los datos existentes en la base de datos antes de cargar los datos de ejemplo.
+
+**Credenciales para pruebas:**
+```
+Usuario Normal:
+  Email: ana@libreria.com
+  Contraseña: User123!
+
+Bibliotecario:
+  Email: carlos@libreria.com
+  Contraseña: Biblio123!
+
+Administrador:
+  Email: admin@libreria.com
+  Contraseña: Admin123!
+```
+
+**Si prefieres usar tus propios datos**, simplemente omite este paso y crea usuarios manualmente usando el endpoint `/api/auth/register`.
+
 
 ### Paso 6: Iniciar el servidor
 ```bash
@@ -721,10 +754,10 @@ Este proyecto está bajo la Licencia MIT.
 
 ## 👨‍💻 Autor
 
-**Tu Nombre**
-- GitHub: [@tu-usuario](https://github.com/tu-usuario)
-- Email: tu@email.com
+
+- GitHub: [Linnmond1504](https://github.com/Linnmond1504)
+- Email: benitezmateo1504@gmail.com
 
 ---
 
-**Repositorio:** [https://github.com/tu-usuario/libreria-crud](https://github.com/tu-usuario/libreria-crud)
+**Repositorio:** [https://github.com/Linnmond1504/libreria-crud]
