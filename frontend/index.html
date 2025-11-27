@@ -1,0 +1,1412 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📚 Librería Digital</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Auth Screen -->
+    <div id="authScreen" class="auth-screen">
+        <div class="login-box">
+            <h2>📚 Librería Digital</h2>
+            
+            <div id="alertAuth" class="alert"></div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="loginEmail" required placeholder="tu@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Contraseña</label>
+                    <input type="password" id="loginPassword" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn-primary">Iniciar Sesión</button>
+            </form>
+
+            <form id="registerForm" class="hidden">
+                <div class="form-group">
+                    <label>Nombre Completo</label>
+                    <input type="text" id="registerName" required placeholder="Tu nombre">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="registerEmail" required placeholder="tu@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Contraseña</label>
+                    <input type="password" id="registerPassword" required minlength="6" placeholder="Mínimo 6 caracteres">
+                </div>
+                <button type="submit" class="btn-primary">Registrarse</button>
+            </form>
+
+            <div class="toggle-auth">
+                <span id="toggleText">¿No tienes cuenta?</span>
+                <a href="#" id="toggleAuthLink">Regístrate aquí</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="mainApp" class="hidden">
+        <!-- Header -->
+        <header class="header" id="header">
+            <div class="header-content">
+                <div class="logo" onclick="showSection('dashboard')">📚 LIBRERÍA</div>
+                <nav class="nav-tabs">
+                    <button class="nav-tab active" onclick="showSection('dashboard')">Inicio</button>
+                    <button class="nav-tab" id="categoriesTab" onclick="showSection('categories')">Categorías</button>
+                    <button class="nav-tab" id="productsTab" onclick="showSection('products')">Libros</button>
+                    <button class="nav-tab" onclick="showSection('loans')">Préstamos</button>
+                    <button class="nav-tab" onclick="showSection('testimonials')">Reseñas</button>
+                    <button class="nav-tab" id="usersTab" onclick="showSection('users')" style="display: none;">Usuarios</button>
+                </nav>
+                <div class="user-section">
+                    <div class="user-info-display" onclick="openProfileModal()">
+                        <div class="profile-image-container">
+                            <img id="headerProfileImage" class="profile-image" alt="Profile">
+                        </div>
+                        <span class="user-name" id="userBadge"></span>
+                    </div>
+                    <button class="btn-logout" onclick="logout()">Salir</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div id="alertMain" class="alert"></div>
+            <div id="loading" class="loading"><div class="spinner"></div></div>
+
+            <!-- Dashboard -->
+            <section id="dashboardSection" class="section active">
+                <!-- HERO para usuarios normales -->
+                <div id="heroSection" class="hero-section hidden">
+                    <div class="hero-background"></div>
+                    <div class="hero-content">
+                        <h1 class="hero-title">Bienvenido a tu Biblioteca Digital</h1>
+                        <p class="hero-subtitle">Miles de libros esperando ser descubiertos</p>
+                        <div class="hero-cta">
+                            <button class="btn-hero" onclick="showSection('categories')">Explorar Categorías</button>
+                            <button class="btn-hero btn-hero-secondary" onclick="showSection('products')">Ver Todos los Libros</button>
+                        </div>
+                        <div class="featured-books">
+                            <h2 class="featured-title">📚 Libros Destacados</h2>
+                            <div id="featuredBooksList" class="cards-grid"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats para admin/librarian -->
+                <div id="statsSection">
+                    <h1 class="section-title">Panel de Control</h1>
+                    <div class="stats-grid" id="statsGrid"></div>
+                </div>
+            </section>
+
+            <!-- Categories -->
+            <section id="categoriesSection" class="section">
+                <div class="section-header">
+                    <h1 class="section-title">Explora por Categorías</h1>
+                    <button class="btn-add" id="btnAddCategory" onclick="openCategoryModal()" style="display: none;">➕ Nueva</button>
+                </div>
+                <div id="categoriesList" class="cards-grid"></div>
+
+                <!-- libros filtrados -->
+                <div id="filteredBooksSection" class="filtered-view hidden">
+                    <div class="filtered-header">
+                        <h2 class="section-title" id="filteredCategoryName">Libros de Categoría</h2>
+                        <button class="btn-back" onclick="clearCategoryFilter()">← Volver a Categorías</button>
+                    </div>
+                    <div id="filteredBooksList" class="cards-grid"></div>
+                </div>
+            </section>
+
+            <!-- Products -->
+            <section id="productsSection" class="section">
+                <div class="section-header">
+                    <h1 class="section-title">Todos los Libros</h1>
+                    <button class="btn-add" id="btnAddProduct" onclick="openProductModal()" style="display: none;">➕ Agregar</button>
+                </div>
+                <div id="productsList" class="cards-grid"></div>
+            </section>
+
+            <!-- Loans -->
+            <section id="loansSection" class="section">
+                <div class="section-header">
+                    <h1 class="section-title">Préstamos</h1>
+                    <button class="btn-add" onclick="openLoanModal()">➕ Nuevo</button>
+                </div>
+                <div id="loansList" class="cards-grid"></div>
+            </section>
+
+            <!-- Testimonials -->
+            <section id="testimonialsSection" class="section">
+                <div class="section-header">
+                    <h1 class="section-title">Reseñas</h1>
+                    <button class="btn-add" onclick="openTestimonialModal()">➕ Escribir</button>
+                </div>
+                <div id="testimonialsList" class="cards-grid"></div>
+            </section>
+
+            <!-- Users (Solo Admin) -->
+            <section id="usersSection" class="section">
+                <div class="section-header">
+                    <h1 class="section-title">Gestión de Usuarios</h1>
+                    <button class="btn-add" onclick="openUserModal()">➕ Crear Usuario</button>
+                </div>
+                <div id="usersList" class="cards-grid"></div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Profile Modal -->
+    <div id="profileModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Mi Perfil</h3>
+                <button class="btn-close" onclick="closeModal('profileModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="profileForm">
+                    <div class="profile-image-container profile-image-large">
+                        <img id="profileImagePreview" class="profile-image" alt="Profile">
+                    </div>
+                    <div class="form-group">
+                        <label>Cambiar Foto de Perfil</label>
+                        <div class="file-upload">
+                            <input type="file" id="profileImageInput" accept="image/*">
+                            <label for="profileImageInput" class="file-upload-label">
+                                📷 Click para cambiar foto
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Nombre</label>
+                        <input type="text" id="profileName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="profileEmail" required>
+                    </div>
+                    <button type="submit" class="btn-primary">Actualizar Perfil</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Modal -->
+    <div id="categoryModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="categoryModalTitle">Nueva Categoría</h3>
+                <button class="btn-close" onclick="closeModal('categoryModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="categoryForm">
+                    <div class="form-group">
+                        <label>Imagen de Portada</label>
+                        <div class="file-upload">
+                            <input type="file" id="categoryCoverInput" accept="image/*">
+                            <label for="categoryCoverInput" class="file-upload-label">
+                                📷 Click para subir imagen
+                            </label>
+                        </div>
+                        <img id="categoryImagePreview" class="image-preview hidden" alt="Preview">
+                        <input type="hidden" id="categoryCoverImage">
+                    </div>
+                    <div class="form-group">
+                        <label>Nombre *</label>
+                        <input type="text" id="categoryName" required placeholder="Ej: Ficción, Historia, etc.">
+                    </div>
+                    <div class="form-group">
+                        <label>Descripción</label>
+                        <textarea id="categoryDescription" rows="3" placeholder="Describe brevemente esta categoría..."></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary">Guardar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Modal -->
+    <div id="productModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="productModalTitle">Nuevo Libro</h3>
+                <button class="btn-close" onclick="closeModal('productModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="productForm">
+                    <div class="form-group">
+                        <label>Portada del Libro</label>
+                        <div class="file-upload">
+                            <input type="file" id="coverImageInput" accept="image/*">
+                            <label for="coverImageInput" class="file-upload-label">
+                                📷 Click para subir imagen
+                            </label>
+                        </div>
+                        <img id="imagePreview" class="image-preview hidden" alt="Vista previa">
+                        <input type="hidden" id="productCoverImage">
+                    </div>
+                    <div class="form-group">
+                        <label>Título *</label>
+                        <input type="text" id="productName" required placeholder="Título del libro">
+                    </div>
+                    <div class="form-group">
+                        <label>Autor *</label>
+                        <input type="text" id="productAuthor" required placeholder="Nombre del autor">
+                    </div>
+                    <div class="form-group">
+                        <label>ISBN</label>
+                        <input type="text" id="productISBN" placeholder="978-0000000000">
+                    </div>
+                    <div class="form-group">
+                        <label>Categoría *</label>
+                        <select id="productCategory" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Precio *</label>
+                        <input type="number" id="productPrice" step="0.01" min="0" required placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label>Stock *</label>
+                        <input type="number" id="productStock" min="0" required placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Año de Publicación</label>
+                        <input type="number" id="productYear" min="1000" max="2100" placeholder="2024">
+                    </div>
+                    <div class="form-group">
+                        <label>Número de Páginas</label>
+                        <input type="number" id="productPages" min="1" placeholder="300">
+                    </div>
+                    <div class="form-group">
+                        <label>Descripción</label>
+                        <textarea id="productDescription" rows="3" placeholder="Sinopsis del libro..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Contenido del Libro</label>
+                        <textarea id="productContent" rows="8" placeholder="Contenido completo del libro..."></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary">Guardar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loan Modal -->
+    <div id="loanModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Nuevo Préstamo</h3>
+                <button class="btn-close" onclick="closeModal('loanModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="loanForm">
+                    <div class="form-group">
+                        <label>Libro *</label>
+                        <select id="loanProduct" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha de Devolución *</label>
+                        <input type="date" id="loanReturnDate" required>
+                    </div>
+                    <button type="submit" class="btn-primary">Crear Préstamo</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Testimonial Modal -->
+    <div id="testimonialModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Nueva Reseña</h3>
+                <button class="btn-close" onclick="closeModal('testimonialModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="testimonialForm">
+                    <div class="form-group">
+                        <label>Libro *</label>
+                        <select id="testimonialProduct" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Calificación *</label>
+                        <select id="testimonialRating" required>
+                            <option value="5">⭐⭐⭐⭐⭐ (5 - Excelente)</option>
+                            <option value="4">⭐⭐⭐⭐ (4 - Muy Bueno)</option>
+                            <option value="3">⭐⭐⭐ (3 - Bueno)</option>
+                            <option value="2">⭐⭐ (2 - Regular)</option>
+                            <option value="1">⭐ (1 - Malo)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Comentario *</label>
+                        <textarea id="testimonialComment" rows="4" required placeholder="Comparte tu opinión..."></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary">Publicar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reader Modal -->
+    <div id="readerModal" class="modal">
+        <div class="modal-content reader">
+            <div class="modal-header">
+                <h3 id="readerTitle">Título del Libro</h3>
+                <button class="btn-close" onclick="closeModal('readerModal')">&times;</button>
+            </div>
+            <div class="reader-container" id="readerContent"></div>
+        </div>
+    </div>
+
+    <!-- User Modal (Solo Admin) -->
+    <div id="userModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="userModalTitle">Crear Usuario</h3>
+                <button class="btn-close" onclick="closeModal('userModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="userForm">
+                    <div class="form-group">
+                        <label>Foto de Perfil</label>
+                        <div class="file-upload">
+                            <input type="file" id="userProfileImageInput" accept="image/*">
+                            <label for="userProfileImageInput" class="file-upload-label">
+                                📷 Click para subir foto
+                            </label>
+                        </div>
+                        <img id="userImagePreview" class="image-preview hidden" alt="Preview">
+                    </div>
+                    <div class="form-group">
+                        <label>Nombre Completo *</label>
+                        <input type="text" id="userName" required placeholder="Nombre del usuario">
+                    </div>
+                    <div class="form-group">
+                        <label>Email *</label>
+                        <input type="email" id="userEmail" required placeholder="email@ejemplo.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Contraseña *</label>
+                        <input type="password" id="userPassword" required minlength="6" placeholder="Mínimo 6 caracteres">
+                    </div>
+                    <div class="form-group">
+                        <label>Rol *</label>
+                        <select id="userRole" required>
+                            <option value="user">Usuario Normal - Solo préstamos y reseñas</option>
+                            <option value="librarian">Bibliotecario - Gestiona libros y préstamos</option>
+                            <option value="admin">Administrador - Acceso total</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-primary">Crear Usuario</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api';
+        let token = localStorage.getItem('token');
+        let currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+        let editingId = null;
+        let selectedImageFile = null;
+        let selectedProfileImageFile = null;
+        let selectedCategoryImageFile = null;
+        let selectedUserImageFile = null;
+        let currentCategoryFilter = null;
+
+        if (token) {
+            showMainApp();
+        }
+
+        // ================================== FUNCIONES ==================================
+        function canManageCategories() {
+            return ['librarian', 'admin'].includes(currentUser.role);
+        }
+
+        function canManageProducts() {
+            return ['librarian', 'admin'].includes(currentUser.role);
+        }
+
+        function canManageUsers() {
+            return currentUser.role === 'admin';
+        }
+
+        function canViewAllLoans() {
+            return ['librarian', 'admin'].includes(currentUser.role);
+        }
+
+        function isNormalUser() {
+            return currentUser.role === 'user';
+        }
+
+        // efecto en el scroll
+        window.addEventListener('scroll', () => {
+            const header = document.getElementById('header');
+            if (header) {
+                if (window.scrollY > 50) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+            }
+        });
+
+        // ================================== AUTH ==================================
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            await login(email, password);
+        });
+
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('registerName').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            await register(name, email, password);
+        });
+
+        document.getElementById('toggleAuthLink').addEventListener('click', (e) => {
+            e.preventDefault();
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const toggleText = document.getElementById('toggleText');
+            const toggleLink = document.getElementById('toggleAuthLink');
+            
+            if (loginForm.classList.contains('hidden')) {
+                loginForm.classList.remove('hidden');
+                registerForm.classList.add('hidden');
+                toggleText.textContent = '¿No tienes cuenta?';
+                toggleLink.textContent = 'Regístrate aquí';
+            } else {
+                loginForm.classList.add('hidden');
+                registerForm.classList.remove('hidden');
+                toggleText.textContent = '¿Ya tienes cuenta?';
+                toggleLink.textContent = 'Inicia sesión';
+            }
+        });
+
+        async function login(email, password) {
+            try {
+                const res = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    token = data.token;
+                    currentUser = data.data;
+                    localStorage.setItem('token', token);
+                    localStorage.setItem('user', JSON.stringify(currentUser));
+                    showMainApp();
+                } else {
+                    showAlert('alertAuth', data.error || 'Error al iniciar sesión', 'error');
+                }
+            } catch (err) {
+                showAlert('alertAuth', 'Error de conexión', 'error');
+            }
+        }
+
+        async function register(name, email, password) {
+            try {
+                const res = await fetch(`${API_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, password, role: 'user' })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showAlert('alertAuth', 'Registro exitoso. Ahora puedes iniciar sesión.', 'success');
+                    document.getElementById('toggleAuthLink').click();
+                } else {
+                    showAlert('alertAuth', data.error || 'Error al registrarse', 'error');
+                }
+            } catch (err) {
+                showAlert('alertAuth', 'Error de conexión', 'error');
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            location.reload();
+        }
+
+        function showMainApp() {
+            document.getElementById('authScreen').classList.add('hidden');
+            document.getElementById('mainApp').classList.remove('hidden');
+            
+            // Mostrar foto de perfil
+            const profileImg = document.getElementById('headerProfileImage');
+            profileImg.src = currentUser.profileImage || 'https://via.placeholder.com/150/FE0202/FFFFFF?text=' + (currentUser.name ? currentUser.name[0] : 'U');
+            
+            const roleNames = {
+                'user': '👤 Usuario',
+                'librarian': '📚 Bibliotecario',
+                'admin': '⭐ Admin'
+            };
+            document.getElementById('userBadge').textContent = currentUser.name;
+            
+            initializePermissions();
+            loadDashboard();
+            loadCategories();
+            loadProducts();
+            loadLoans();
+            loadTestimonials();
+        }
+
+        function initializePermissions() {
+            // Mostrar hero para usuarios normales
+            if (isNormalUser()) {
+                document.getElementById('heroSection').classList.remove('hidden');
+                document.getElementById('statsSection').classList.add('hidden');
+                loadFeaturedBooks();
+            } else {
+                document.getElementById('heroSection').classList.add('hidden');
+                document.getElementById('statsSection').classList.remove('hidden');
+            }
+
+            // Mostrar tabs según permisos
+            if (canManageCategories()) {
+                document.getElementById('btnAddCategory').style.display = 'flex';
+            }
+
+            if (canManageProducts()) {
+                document.getElementById('btnAddProduct').style.display = 'flex';
+                document.getElementById('productsTab').style.display = 'block';
+            }
+
+            if (canManageUsers()) {
+                document.getElementById('usersTab').style.display = 'block';
+                loadUsers();
+            }
+
+            // Usuarios normales siempre ven categorías
+            document.getElementById('categoriesTab').style.display = 'block';
+        }
+
+        function showSection(section) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(`${section}Section`).classList.add('active');
+            event.target.classList.add('active');
+
+            
+            if (section !== 'categories') {
+                clearCategoryFilter();
+            }
+        }
+
+        async function apiCall(endpoint, method = 'GET', body = null) {
+            const options = {
+                method,
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            };
+            
+            if (body && !(body instanceof FormData)) {
+                options.headers['Content-Type'] = 'application/json';
+                options.body = JSON.stringify(body);
+            } else if (body instanceof FormData) {
+                options.body = body;
+            }
+            
+            const res = await fetch(`${API_URL}${endpoint}`, options);
+            return await res.json();
+        }
+
+        // ================================== PERFIL ==================================
+        function openProfileModal() {
+            document.getElementById('profileName').value = currentUser.name;
+            document.getElementById('profileEmail').value = currentUser.email;
+            const profileImg = document.getElementById('profileImagePreview');
+            profileImg.src = currentUser.profileImage || 'https://via.placeholder.com/150/FE0202/FFFFFF?text=' + currentUser.name[0];
+            document.getElementById('profileModal').classList.add('active');
+        }
+
+        function previewProfileImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                selectedProfileImageFile = file;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('profileImagePreview');
+                    preview.src = e.target.result;
+                    preview.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        document.getElementById('profileForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            formData.append('name', document.getElementById('profileName').value);
+            formData.append('email', document.getElementById('profileEmail').value);
+            
+            if (selectedProfileImageFile) {
+                formData.append('profileImage', selectedProfileImageFile);
+            }
+            
+            const data = await apiCall(`/users/${currentUser._id}`, 'PUT', formData);
+            
+            if (data.success) {
+                currentUser = data.data;
+                localStorage.setItem('user', JSON.stringify(currentUser));
+                document.getElementById('headerProfileImage').src = currentUser.profileImage;
+                document.getElementById('userBadge').textContent = currentUser.name;
+                showAlert('alertMain', '✅ Perfil actualizado correctamente', 'success');
+                closeModal('profileModal');
+            } else {
+                showAlert('alertMain', '❌ ' + data.error, 'error');
+            }
+        });
+
+        // ================================== DASHBOARD ==================================
+        async function loadDashboard() {
+            const [categories, products, loans, testimonials] = await Promise.all([
+                apiCall('/categories'),
+                apiCall('/products'),
+                apiCall('/loans'),
+                apiCall('/testimonials')
+            ]);
+
+            const html = `
+                <div class="stat-card">
+                    <h3>${categories.count || 0}</h3>
+                    <p>Categorías</p>
+                </div>
+                <div class="stat-card">
+                    <h3>${products.count || 0}</h3>
+                    <p>Libros</p>
+                </div>
+                <div class="stat-card">
+                    <h3>${loans.count || 0}</h3>
+                    <p>Préstamos</p>
+                </div>
+                <div class="stat-card">
+                    <h3>${testimonials.count || 0}</h3>
+                    <p>Reseñas</p>
+                </div>
+            `;
+            document.getElementById('statsGrid').innerHTML = html;
+        }
+
+        async function loadFeaturedBooks() {
+            const data = await apiCall('/products');
+            const featured = data.data.slice(0, 6);
+            
+            const html = featured.map(prod => `
+                <div class="card" onclick="openReader('${prod._id}')">
+                    <img src="${prod.coverImage || 'https://via.placeholder.com/300x450/FE0202/FFFFFF?text=Sin+Portada'}" 
+                         alt="${prod.name}" 
+                         class="card-image">
+                    <div class="card-content">
+                        <div class="card-title">${prod.name}</div>
+                        <div class="card-subtitle">${prod.author || 'Autor desconocido'}</div>
+                    </div>
+                </div>
+            `).join('');
+            
+            document.getElementById('featuredBooksList').innerHTML = html;
+        }
+
+        // ================================== CATEGORIAS ==================================
+        async function loadCategories() {
+            const data = await apiCall('/categories');
+            if (!data.data || data.data.length === 0) {
+                document.getElementById('categoriesList').innerHTML = '<div class="empty-state"><h3>No hay categorías</h3><p>Agrega tu primera categoría para comenzar</p></div>';
+                return;
+            }
+            
+            const html = data.data.map(cat => `
+                <div class="category-card" onclick="filterBooksByCategory('${cat._id}', '${cat.name}')">
+                    <img src="${cat.coverImage || 'https://via.placeholder.com/400x200/FE0202/FFFFFF?text=' + cat.name}" 
+                         alt="${cat.name}" 
+                         class="category-image">
+                    <div class="category-overlay">
+                        <div class="category-name">${cat.name}</div>
+                        <div class="category-description">${cat.description || 'Sin descripción'}</div>
+                        ${canManageCategories() ? `
+                            <div style="margin-top: 12px; display: flex; gap: 8px;">
+                                <button class="btn btn-edit" onclick="event.stopPropagation(); editCategory('${cat._id}')">Editar</button>
+                                <button class="btn btn-delete" onclick="event.stopPropagation(); deleteCategory('${cat._id}')">Eliminar</button>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+            
+            document.getElementById('categoriesList').innerHTML = html;
+        }
+
+        async function filterBooksByCategory(categoryId, categoryName) {
+            currentCategoryFilter = categoryId;
+            document.getElementById('filteredCategoryName').textContent = `Libros de ${categoryName}`;
+            document.getElementById('categoriesList').style.display = 'none';
+            document.getElementById('filteredBooksSection').classList.remove('hidden');
+            
+            const data = await apiCall(`/products/category/${categoryId}`);
+            
+            if (!data.data || data.data.length === 0) {
+                document.getElementById('filteredBooksList').innerHTML = '<div class="empty-state"><h3>No hay libros en esta categoría</h3></div>';
+                return;
+            }
+            
+            const html = data.data.map(prod => `
+                <div class="card" onclick="openReader('${prod._id}')">
+                    <img src="${prod.coverImage || 'https://via.placeholder.com/300x450/FE0202/FFFFFF?text=Sin+Portada'}" 
+                         alt="${prod.name}" 
+                         class="card-image">
+                    <div class="card-content">
+                        <div class="card-title">${prod.name}</div>
+                        <div class="card-subtitle">${prod.author || 'Autor desconocido'}</div>
+                        <div class="card-body">
+                            <p><strong>Precio:</strong> ${prod.price}</p>
+                            <p><strong>Stock:</strong> ${prod.stock}</p>
+                        </div>
+                        <div class="card-footer">
+                            <button class="btn btn-read" onclick="event.stopPropagation(); openReader('${prod._id}')">▶ Leer</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            document.getElementById('filteredBooksList').innerHTML = html;
+        }
+
+        function clearCategoryFilter() {
+            currentCategoryFilter = null;
+            document.getElementById('categoriesList').style.display = 'grid';
+            document.getElementById('filteredBooksSection').classList.add('hidden');
+        }
+
+        function openCategoryModal() {
+            if (!canManageCategories()) {
+                showAlert('alertMain', '❌ No tienes permisos para crear categorías', 'error');
+                return;
+            }
+            editingId = null;
+            selectedCategoryImageFile = null;
+            document.getElementById('categoryModalTitle').textContent = 'Nueva Categoría';
+            document.getElementById('categoryForm').reset();
+            document.getElementById('categoryImagePreview').classList.add('hidden');
+            document.getElementById('categoryModal').classList.add('active');
+        }
+
+        function previewCategoryImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                selectedCategoryImageFile = file;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('categoryImagePreview');
+                    preview.src = e.target.result;
+                    preview.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        async function editCategory(id) {
+            if (!canManageCategories()) return;
+            editingId = id;
+            selectedCategoryImageFile = null;
+            const data = await apiCall(`/categories/${id}`);
+            document.getElementById('categoryName').value = data.data.name;
+            document.getElementById('categoryDescription').value = data.data.description || '';
+            document.getElementById('categoryCoverImage').value = data.data.coverImage || '';
+            
+            if (data.data.coverImage) {
+                const preview = document.getElementById('categoryImagePreview');
+                preview.src = data.data.coverImage;
+                preview.classList.remove('hidden');
+            }
+            
+            document.getElementById('categoryModalTitle').textContent = 'Editar Categoría';
+            document.getElementById('categoryModal').classList.add('active');
+        }
+
+        document.getElementById('categoryForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (!canManageCategories()) return;
+
+            const formData = new FormData();
+            formData.append('name', document.getElementById('categoryName').value);
+            formData.append('description', document.getElementById('categoryDescription').value);
+            
+            if (selectedCategoryImageFile) {
+                formData.append('coverImage', selectedCategoryImageFile);
+            } else if (editingId && document.getElementById('categoryCoverImage').value) {
+                formData.append('coverImage', document.getElementById('categoryCoverImage').value);
+            }
+            
+            const data = editingId 
+                ? await apiCall(`/categories/${editingId}`, 'PUT', formData)
+                : await apiCall('/categories', 'POST', formData);
+            
+            if (data.success) {
+                showAlert('alertMain', data.message, 'success');
+                closeModal('categoryModal');
+                loadCategories();
+                loadDashboard();
+            } else {
+                showAlert('alertMain', data.error, 'error');
+            }
+        });
+
+        async function deleteCategory(id) {
+            if (!canManageCategories()) return;
+            if (!confirm('¿Eliminar esta categoría?')) return;
+            const data = await apiCall(`/categories/${id}`, 'DELETE');
+            showAlert('alertMain', data.message || data.error, data.success ? 'success' : 'error');
+            if (data.success) {
+                loadCategories();
+                loadDashboard();
+            }
+        }
+
+        // ================================== PRODUCTOS ==================================
+        async function loadProducts() {
+            const data = await apiCall('/products');
+            if (!data.data || data.data.length === 0) {
+                document.getElementById('productsList').innerHTML = '<div class="empty-state"><h3>No hay libros</h3><p>Agrega tu primer libro para comenzar</p></div>';
+                return;
+            }
+            const html = data.data.map(prod => `
+                <div class="card" onclick="openReader('${prod._id}')">
+                    <img src="${prod.coverImage || 'https://via.placeholder.com/300x450/FE0202/FFFFFF?text=Sin+Portada'}" 
+                         alt="${prod.name}" 
+                         class="card-image">
+                    <div class="card-content">
+                        <div class="card-title">${prod.name}</div>
+                        <div class="card-subtitle">${prod.author || 'Autor desconocido'}</div>
+                        <div class="card-body">
+                            <p><strong>Categoría:</strong> ${prod.category?.name || 'Sin categoría'}</p>
+                            <p><strong>Precio:</strong> ${prod.price} | <strong>Stock:</strong> ${prod.stock}</p>
+                            ${prod.year ? `<p><strong>Año:</strong> ${prod.year}</p>` : ''}
+                        </div>
+                        <div class="card-footer">
+                            <button class="btn btn-read" onclick="event.stopPropagation(); openReader('${prod._id}')">▶ Ver</button>
+                            ${canManageProducts() ? `
+                                <button class="btn btn-edit" onclick="event.stopPropagation(); editProduct('${prod._id}')">Editar</button>
+                                <button class="btn btn-delete" onclick="event.stopPropagation(); deleteProduct('${prod._id}')">Eliminar</button>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            document.getElementById('productsList').innerHTML = html;
+        }
+
+
+        function previewImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                selectedImageFile = file;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('imagePreview');
+                    preview.src = e.target.result;
+                    preview.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+
+        async function openProductModal() {
+            if (!canManageProducts()) return;
+            editingId = null;
+            selectedImageFile = null;
+            document.getElementById('productModalTitle').textContent = 'Nuevo Libro';
+            document.getElementById('productForm').reset();
+            document.getElementById('imagePreview').classList.add('hidden');
+            await loadCategorySelect('productCategory');
+            document.getElementById('productModal').classList.add('active');
+        }
+
+        async function editProduct(id) {
+            if (!canManageProducts()) return;
+            editingId = id;
+            selectedImageFile = null;
+            const data = await apiCall(`/products/${id}`);
+            const prod = data.data;
+            
+            document.getElementById('productName').value = prod.name;
+            document.getElementById('productAuthor').value = prod.author || '';
+            document.getElementById('productISBN').value = prod.isbn || '';
+            document.getElementById('productPrice').value = prod.price;
+            document.getElementById('productStock').value = prod.stock;
+            document.getElementById('productYear').value = prod.year || '';
+            document.getElementById('productPages').value = prod.pages || '';
+            document.getElementById('productDescription').value = prod.description || '';
+            document.getElementById('productContent').value = prod.content || '';
+            document.getElementById('productCoverImage').value = prod.coverImage || '';
+            
+            if (prod.coverImage) {
+                const preview = document.getElementById('imagePreview');
+                preview.src = prod.coverImage;
+                preview.classList.remove('hidden');
+            }
+            
+            await loadCategorySelect('productCategory', prod.category._id || prod.category);
+            document.getElementById('productModalTitle').textContent = 'Editar Libro';
+            document.getElementById('productModal').classList.add('active');
+        }
+
+        document.getElementById('productForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!canManageProducts()) return;
+            
+            const formData = new FormData();
+            formData.append('name', document.getElementById('productName').value);
+            formData.append('author', document.getElementById('productAuthor').value);
+            formData.append('isbn', document.getElementById('productISBN').value);
+            formData.append('category', document.getElementById('productCategory').value);
+            formData.append('price', document.getElementById('productPrice').value);
+            formData.append('stock', document.getElementById('productStock').value);
+            formData.append('year', document.getElementById('productYear').value);
+            formData.append('pages', document.getElementById('productPages').value);
+            formData.append('description', document.getElementById('productDescription').value);
+            formData.append('content', document.getElementById('productContent').value);
+            
+            if (selectedImageFile) {
+                formData.append('coverImage', selectedImageFile);
+            } else if (editingId && document.getElementById('productCoverImage').value) {
+                formData.append('coverImage', document.getElementById('productCoverImage').value);
+            }
+            
+            const data = editingId 
+                ? await apiCall(`/products/${editingId}`, 'PUT', formData)
+                : await apiCall('/products', 'POST', formData);
+            
+            if (data.success) {
+                showAlert('alertMain', data.message, 'success');
+                closeModal('productModal');
+                loadProducts();
+                loadDashboard();
+                loadFeaturedBooks();
+            } else {
+                showAlert('alertMain', data.error, 'error');
+            }
+        });
+
+        async function deleteProduct(id) {
+            if (!canManageProducts()) return;
+            if (!confirm('¿Eliminar este libro?')) return;
+            const data = await apiCall(`/products/${id}`, 'DELETE');
+            showAlert('alertMain', data.message || data.error, data.success ? 'success' : 'error');
+            if (data.success) {
+                loadProducts();
+                loadDashboard();
+            }
+        }
+
+        async function openReader(productId) {
+            const data = await apiCall(`/products/${productId}`);
+            const book = data.data;
+            
+            document.getElementById('readerTitle').textContent = book.name;
+            
+            const content = book.content || 'Este libro aún no tiene contenido disponible.';
+            const formattedContent = content.split('\n\n').map(p => `<p>${p}</p>`).join('');
+            
+            document.getElementById('readerContent').innerHTML = `
+                <h1>${book.name}</h1>
+                <h2>por ${book.author}</h2>
+                <hr style="margin: 30px 0; border: none; border-top: 1px solid rgba(255,255,255,0.1);">
+                ${formattedContent}
+            `;
+            
+            document.getElementById('readerModal').classList.add('active');
+        }
+
+        // ================================== LOANS ==================================
+        async function loadLoans() {
+            const data = await apiCall('/loans');
+            if (!data.data || data.data.length === 0) {
+                document.getElementById('loansList').innerHTML = '<div class="empty-state"><h3>No hay préstamos</h3><p>Crea tu primer préstamo</p></div>';
+                return;
+            }
+            
+            let filteredLoans = data.data;
+            if (!canViewAllLoans()) {
+                filteredLoans = data.data.filter(loan => loan.user._id === currentUser._id);
+            }
+            
+            if (filteredLoans.length === 0) {
+                document.getElementById('loansList').innerHTML = '<div class="empty-state"><h3>No tienes préstamos</h3></div>';
+                return;
+            }
+
+            const html = filteredLoans.map(loan => {
+                const status = loan.returned ? 'returned' : 
+                              (new Date(loan.returnDate) < new Date() ? 'overdue' : 'active');
+                const badgeClass = status === 'returned' ? 'badge-success' : 
+                                  status === 'overdue' ? 'badge-warning' : 'badge-info';
+                const statusText = status === 'returned' ? 'Devuelto' : 
+                                  status === 'overdue' ? 'Vencido' : 'Activo';
+                
+                return `
+                    <div class="card">
+                        <div class="card-image" style="background: var(--secondary); display: flex; align-items: center; justify-content: center; font-size: 48px;">
+                            📅
+                        </div>
+                        <div class="card-content">
+                            <div class="user-info-card">
+                                <img src="${loan.user?.profileImage || 'https://via.placeholder.com/32/FE0202/FFFFFF?text=' + (loan.user?.name[0] || 'U')}" 
+                                     class="user-avatar-small" 
+                                     alt="${loan.user?.name}">
+                                <span class="card-subtitle">${loan.user?.name || 'Usuario'}</span>
+                            </div>
+                            <div class="card-title">${loan.product?.name || 'Libro no disponible'}</div>
+                            <div class="card-body">
+                                <p><strong>Préstamo:</strong> ${new Date(loan.loanDate).toLocaleDateString()}</p>
+                                <p><strong>Devolución:</strong> ${new Date(loan.returnDate).toLocaleDateString()}</p>
+                            </div>
+                            <div class="card-footer">
+                                <span class="badge ${badgeClass}">${statusText}</span>
+                                ${!loan.returned && (loan.user._id === currentUser._id || canViewAllLoans()) ? 
+                                    `<button class="btn btn-view" onclick="returnLoan('${loan._id}')">Devolver</button>` : ''}
+                                ${currentUser.role === 'admin' ? 
+                                    `<button class="btn btn-delete" onclick="deleteLoan('${loan._id}')">Eliminar</button>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            document.getElementById('loansList').innerHTML = html;
+        }
+
+        async function openLoanModal() {
+            await loadProductSelect('loanProduct');
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            document.getElementById('loanReturnDate').min = tomorrow.toISOString().split('T')[0];
+            document.getElementById('loanModal').classList.add('active');
+        }
+
+        document.getElementById('loanForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const body = {
+                product: document.getElementById('loanProduct').value,
+                returnDate: new Date(document.getElementById('loanReturnDate').value).toISOString()
+            };
+            
+            const data = await apiCall('/loans', 'POST', body);
+            
+            if (data.success) {
+                showAlert('alertMain', data.message, 'success');
+                closeModal('loanModal');
+                loadLoans();
+                loadProducts();
+                loadDashboard();
+            } else {
+                showAlert('alertMain', data.error, 'error');
+            }
+        });
+
+        async function returnLoan(id) {
+            if (!confirm('¿Marcar como devuelto?')) return;
+            const data = await apiCall(`/loans/${id}/return`, 'POST');
+            showAlert('alertMain', data.message || data.error, data.success ? 'success' : 'error');
+            if (data.success) {
+                loadLoans();
+                loadProducts();
+                loadDashboard();
+            }
+        }
+
+        async function deleteLoan(id) {
+            if (!confirm('¿Eliminar este préstamo?')) return;
+            const data = await apiCall(`/loans/${id}`, 'DELETE');
+            showAlert('alertMain', data.message || data.error, data.success ? 'success' : 'error');
+            if (data.success) {
+                loadLoans();
+                loadProducts();
+                loadDashboard();
+            }
+        }
+
+        // ================================== TESTIMONIALS ==================================
+        async function loadTestimonials() {
+            const data = await apiCall('/testimonials');
+            if (!data.data || data.data.length === 0) {
+                document.getElementById('testimonialsList').innerHTML = '<div class="empty-state"><h3>No hay reseñas</h3></div>';
+                return;
+            }
+            const html = data.data.map(test => {
+                const stars = '⭐'.repeat(test.rating);
+                return `
+                    <div class="card">
+                        <div class="card-image" style="background: linear-gradient(135deg, #FE0202 0%, #C70000 100%); display: flex; align-items: center; justify-content: center; font-size: 48px;">
+                            ⭐
+                        </div>
+                        <div class="card-content">
+                            <div class="user-info-card">
+                                <img src="${test.user?.profileImage || 'https://via.placeholder.com/32/FE0202/FFFFFF?text=' + (test.user?.name[0] || 'U')}" 
+                                     class="user-avatar-small" 
+                                     alt="${test.user?.name}">
+                                <span class="card-subtitle">${test.user?.name || 'Usuario'}</span>
+                            </div>
+                            <div class="card-title">${test.product?.name || 'Libro'}</div>
+                            <div class="card-body">
+                                <p><strong>${stars}</strong> (${test.rating}/5)</p>
+                                <p>${test.comment}</p>
+                            </div>
+                            <div class="card-footer">
+                                <span class="badge badge-info">${new Date(test.createdAt).toLocaleDateString()}</span>
+                                ${test.user?._id === currentUser._id || currentUser.role === 'admin' ? 
+                                    `<button class="btn btn-delete" onclick="deleteTestimonial('${test._id}')">Eliminar</button>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            document.getElementById('testimonialsList').innerHTML = html;
+        }
+
+        async function openTestimonialModal() {
+            await loadProductSelect('testimonialProduct');
+            document.getElementById('testimonialModal').classList.add('active');
+        }
+
+        document.getElementById('testimonialForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const body = {
+                product: document.getElementById('testimonialProduct').value,
+                rating: parseInt(document.getElementById('testimonialRating').value),
+                comment: document.getElementById('testimonialComment').value
+            };
+            
+            const data = await apiCall('/testimonials', 'POST', body);
+            
+            if (data.success) {
+                showAlert('alertMain', data.message, 'success');
+                closeModal('testimonialModal');
+                loadTestimonials();
+                loadDashboard();
+            } else {
+                showAlert('alertMain', data.error, 'error');
+            }
+        });
+
+        async function deleteTestimonial(id) {
+            if (!confirm('¿Eliminar esta reseña?')) return;
+            const data = await apiCall(`/testimonials/${id}`, 'DELETE');
+            showAlert('alertMain', data.message || data.error, data.success ? 'success' : 'error');
+            if (data.success) {
+                loadTestimonials();
+                loadDashboard();
+            }
+        }
+
+        // ================================== USERS ==================================
+        async function loadUsers() {
+            if (!canManageUsers()) return;
+            
+            const data = await apiCall('/users');
+            const html = data.data.map(user => {
+                const roleText = {
+                    'user': '👤 Usuario',
+                    'librarian': '📚 Bibliotecario',
+                    'admin': '⭐ Administrador'
+                };
+                
+                const roleBadge = {
+                    'user': 'badge-info',
+                    'librarian': 'badge-warning',
+                    'admin': 'badge-success'
+                };
+                
+                return `
+                    <div class="card">
+                        <div class="card-image" style="background: var(--secondary); display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                            <img src="${user.profileImage || 'https://via.placeholder.com/300/FE0202/FFFFFF?text=' + user.name[0]}" 
+                                 alt="${user.name}"
+                                 style="width: 100%; height: 100%; object-fit: cover;">
+                        </div>
+                        <div class="card-content">
+                            <div class="card-title">${user.name}</div>
+                            <div class="card-subtitle">${user.email}</div>
+                            <div class="card-body">
+                                <p><strong>Rol:</strong> <span class="badge ${roleBadge[user.role]}">${roleText[user.role]}</span></p>
+                                <p><strong>Registrado:</strong> ${new Date(user.createdAt).toLocaleDateString()}</p>
+                            </div>
+                            <div class="card-footer">
+                                ${user._id !== currentUser._id ? 
+                                    `<button class="btn btn-edit" onclick="editUserRole('${user._id}', '${user.role}')">✏️ Cambiar Rol</button>
+                                    <button class="btn btn-delete" onclick="deleteUser('${user._id}')">🗑️ Eliminar</button>` 
+                                    : '<span style="color: var(--text-secondary); font-size: 13px;">Eres tú</span>'}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            document.getElementById('usersList').innerHTML = html;
+        }
+
+        function openUserModal() {
+            if (!canManageUsers()) return;
+            selectedUserImageFile = null;
+            document.getElementById('userModalTitle').textContent = 'Crear Nuevo Usuario';
+            document.getElementById('userForm').reset();
+            document.getElementById('userImagePreview').classList.add('hidden');
+            document.getElementById('userModal').classList.add('active');
+        }
+
+        function previewUserImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                selectedUserImageFile = file;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                 const preview = document.getElementById('userImagePreview');
+                 preview.src = e.target.result;
+                 preview.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        document.getElementById('userForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!canManageUsers()) return;
+            
+            const formData = new FormData();
+            formData.append('name', document.getElementById('userName').value);
+            formData.append('email', document.getElementById('userEmail').value);
+            formData.append('password', document.getElementById('userPassword').value);
+            formData.append('role', document.getElementById('userRole').value);
+            
+            if (selectedUserImageFile) {
+                formData.append('profileImage', selectedUserImageFile);
+            }
+            
+        
+            const registerData = {
+                name: document.getElementById('userName').value,
+                email: document.getElementById('userEmail').value,
+                password: document.getElementById('userPassword').value,
+                role: document.getElementById('userRole').value
+            };
+            
+            const data = await apiCall('/auth/register', 'POST', registerData);
+            
+            if (data.success) {
+               
+                if (selectedUserImageFile) {
+                    const updateFormData = new FormData();
+                    updateFormData.append('profileImage', selectedUserImageFile);
+                    await apiCall(`/users/${data.data._id}`, 'PUT', updateFormData);
+                }
+                
+                showAlert('alertMain', '✅ Usuario creado exitosamente', 'success');
+                closeModal('userModal');
+                loadUsers();
+                loadDashboard();
+            } else {
+                showAlert('alertMain', '❌ ' + data.error, 'error');
+            }
+        });
+
+        async function editUserRole(userId, currentRole) {
+            if (!canManageUsers()) return;
+
+            const roles = {
+                'user': 'Usuario Normal',
+                'librarian': 'Bibliotecario',
+                'admin': 'Administrador'
+            };
+            
+            const newRole = prompt(`Cambiar rol de usuario:\n\nRol actual: ${roles[currentRole]}\n\nEscribe el nuevo rol:\n- user (Usuario normal)\n- librarian (Bibliotecario)\n- admin (Administrador)`);
+            
+            if (!newRole || !['user', 'librarian', 'admin'].includes(newRole.toLowerCase())) {
+                showAlert('alertMain', '❌ Rol inválido', 'error');
+                return;
+            }
+            
+            const data = await apiCall(`/users/${userId}`, 'PUT', { role: newRole.toLowerCase() });
+            
+            if (data.success) {
+                showAlert('alertMain', '✅ Rol actualizado correctamente', 'success');
+                loadUsers();
+            } else {
+                showAlert('alertMain', '❌ ' + data.error, 'error');
+            }
+        }
+
+        async function deleteUser(userId) {
+            if (!canManageUsers()) return;
+            if (!confirm('⚠️ ¿Estás seguro de eliminar este usuario?\n\nEsta acción no se puede deshacer.')) return;
+            
+            const data = await apiCall(`/users/${userId}`, 'DELETE');
+            showAlert('alertMain', data.message || data.error, data.success ? 'success' : 'error');
+            
+            if (data.success) {
+                loadUsers();
+                loadDashboard();
+            }
+        }
+
+        // ==================== HELPERS ====================
+        async function loadCategorySelect(selectId, selectedId = null) {
+            const data = await apiCall('/categories');
+            const select = document.getElementById(selectId);
+            select.innerHTML = '<option value="">Selecciona una categoría</option>' +
+                data.data.map(cat => 
+                    `<option value="${cat._id}" ${cat._id === selectedId ? 'selected' : ''}>${cat.name}</option>`
+                ).join('');
+        }
+
+        async function loadProductSelect(selectId) {
+            const data = await apiCall('/products');
+            const select = document.getElementById(selectId);
+            const availableProducts = data.data.filter(p => p.stock > 0);
+            select.innerHTML = '<option value="">Selecciona un libro</option>' +
+                availableProducts.map(prod => 
+                    `<option value="${prod._id}">${prod.name} - ${prod.author} (Stock: ${prod.stock})</option>`
+                ).join('');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function showAlert(alertId, message, type) {
+            const alert = document.getElementById(alertId);
+            alert.className = `alert alert-${type} active`;
+            alert.textContent = message;
+            setTimeout(() => alert.classList.remove('active'), 5000);
+        }
+
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.remove('active');
+                }
+            });
+        });
+
+
+        // ================================== EVENT LISTENERS PARA IMÁGENES ==================================
+document.getElementById('coverImageInput').addEventListener('change', previewImage);
+document.getElementById('profileImageInput').addEventListener('change', previewProfileImage);
+document.getElementById('categoryCoverInput').addEventListener('change', previewCategoryImage);
+document.getElementById('userProfileImageInput').addEventListener('change', previewUserImage);
+    </script>
+</body>
+</html>

@@ -1,0 +1,118 @@
+{
+  "users": [
+    {
+      "name": "benitez mateo",
+      "email": "benitezmateo1504@gmail.com",
+      "password": "Password123!",
+      "role": "user"
+    },
+    {
+      "name": "María García",
+      "email": "maria@ejemplo.com",
+      "password": "Password123!",
+      "role": "librarian"
+    },
+    {
+      "name": "Admin Usuario",
+      "email": "admin@ejemplo.com",
+      "password": "Admin123!",
+      "role": "admin"
+    }
+  ],
+  "categories": [
+    {
+      "name": "Ficción",
+      "description": "Libros de ficción literaria, novelas y cuentos"
+    },
+    {
+      "name": "No Ficción",
+      "description": "Libros basados en hechos reales, biografías, historia"
+    },
+    {
+      "name": "Ciencia y Tecnología",
+      "description": "Libros sobre ciencia, tecnología, programación"
+    },
+    {
+      "name": "Autoayuda",
+      "description": "Libros de desarrollo personal y autoayuda"
+    },
+    {
+      "name": "Infantil",
+      "description": "Libros para niños y jóvenes"
+    }
+  ],
+  "products": [
+    {
+      "name": "Cien Años de Soledad",
+      "description": "Obra maestra de Gabriel García Márquez que narra la historia de la familia Buendía",
+      "price": 25.99,
+      "stock": 15,
+      "author": "Gabriel García Márquez",
+      "isbn": "978-0307474728",
+      "category": "ID_DE_CATEGORIA_FICCION"
+    },
+    {
+      "name": "1984",
+      "description": "Novela distópica de George Orwell sobre un futuro totalitario",
+      "price": 18.50,
+      "stock": 20,
+      "author": "George Orwell",
+      "isbn": "978-0451524935",
+      "category": "ID_DE_CATEGORIA_FICCION"
+    },
+    {
+      "name": "Sapiens: De animales a dioses",
+      "description": "Una breve historia de la humanidad por Yuval Noah Harari",
+      "price": 29.99,
+      "stock": 10,
+      "author": "Yuval Noah Harari",
+      "isbn": "978-0062316097",
+      "category": "ID_DE_CATEGORIA_NO_FICCION"
+    },
+    {
+      "name": "Clean Code",
+      "description": "Manual de estilo para el desarrollo ágil de software",
+      "price": 45.00,
+      "stock": 8,
+      "author": "Robert C. Martin",
+      "isbn": "978-0132350884",
+      "category": "ID_DE_CATEGORIA_CIENCIA"
+    }
+  ],
+  "testimonials": [
+    {
+      "product": "ID_DE_PRODUCTO",
+      "rating": 5,
+      "comment": "Una obra maestra de la literatura latinoamericana. Lectura obligada para todos."
+    },
+    {
+      "product": "ID_DE_PRODUCTO",
+      "rating": 4,
+      "comment": "Muy buen libro, aunque algunas partes son un poco densas."
+    }
+  ],
+  "loans": [
+    {
+      "product": "ID_DE_PRODUCTO",
+      "returnDate": "2025-12-01T00:00:00.000Z"
+    }
+  ],
+  "settings": [
+    {
+      "key": "max_loan_days",
+      "value": 30,
+      "description": "Máximo de días permitidos para un préstamo"
+    },
+    {
+      "key": "max_loans_per_user",
+      "value": 5,
+      "description": "Máximo de préstamos simultáneos por usuario"
+    },
+    {
+      "key": "late_fee_per_day",
+      "value": 2.50,
+      "description": "Multa por día de retraso en la devolución"
+    }
+  ]
+}
+
